@@ -130,7 +130,7 @@ tests/
 Clone repository
 
 ```bash
-git clone https://github.com/yourusername/catetin.git
+git clone https://github.com/allamzaahid1/cashflow.git
 ```
 
 Masuk ke folder project
@@ -187,34 +187,6 @@ npm run dev
 
 ---
 
-# 📸 Screenshots
-
-| Dashboard          | Transaction        |
-| ------------------ | ------------------ |
-| *(Add Screenshot)* | *(Add Screenshot)* |
-
-| Reports            | Settings           |
-| ------------------ | ------------------ |
-| *(Add Screenshot)* | *(Add Screenshot)* |
-
----
-
-# 🧪 Testing
-
-Run all tests
-
-```bash
-php artisan test
-```
-
-Run Laravel Pint
-
-```bash
-vendor/bin/pint
-```
-
----
-
 # 📂 Main Modules
 
 * Authentication
@@ -258,7 +230,7 @@ vendor/bin/pint
 
 # 👨‍💻 Developer
 
-**Yukira Hamiaski**
+**Allam Zaahid**
 
 Accounting Information Systems Project
 
@@ -266,6 +238,6 @@ Accounting Information Systems Project
 
 # 📄 License
 
-This project is developed for educational purposes as part of an undergraduate final project (Skripsi).
+This project is developed for educational purposes.
 
 Feel free to use it as a reference while respecting the original author's work.
