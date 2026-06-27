@@ -1,58 +1,271 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 💸 Catetin
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<div align="center">
 
-## About Laravel
+<img src="resources/img/Catetin.png" alt="Catetin Logo" width="180"/>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Cash Flow Management System for MSMEs
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+A web-based cash flow management application built with **Laravel 12**, designed to help small businesses record income, expenses, payment methods, and generate financial reports.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+</div>
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ✨ Features
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🔐 Authentication
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+* User Registration
+* User Login & Logout
+* Remember Me
+* Password Validation
 
-## Agentic Development
+### 🏪 Shop Management
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+* Shop registration
+* Shop profile management
+* Automatic default setup for new shops
 
-```bash
-composer require laravel/boost --dev
+### 📂 Category Management
 
-php artisan boost:install
+* Default income & expense categories
+* Custom category CRUD
+* Duplicate validation
+* Prevent deletion when used by transactions
+
+### 💳 Payment Method Management
+
+* Default Cash payment method
+* QRIS / Bank Transfer / E-Wallet support
+* QR Code upload
+* Active / Inactive status
+* Prevent deletion when referenced
+
+### 💰 Transaction Management
+
+* Record Income & Expense
+* Automatic transaction code generation
+* Proof image upload
+* Cash & Non-Cash payment support
+* Transaction validation
+
+### 📊 Dashboard
+
+* Today's income statistics
+* Transaction summary
+* Cash vs Non-Cash statistics
+* Weekly income chart
+* Recent transactions
+
+### 📑 Sales Report
+
+* Date range filtering
+* Category filtering
+* Payment method filtering
+* Income & Expense summaries
+* Running balance
+* PDF Export
+* Excel Export
+
+### 💸 Withdrawal
+
+* Available balance calculation
+* Monthly withdrawal quota
+* Admin fee calculation
+* Withdrawal history
+* Balance synchronization
+
+### 🎨 UI Features
+
+* Responsive layout
+* Light & Dark theme
+* Consistent design system
+* Modern dashboard interface
+
+---
+
+# 🛠 Tech Stack
+
+| Technology   | Version |
+| ------------ | ------- |
+| PHP          | 8.3+    |
+| Laravel      | 12      |
+| Blade        | Latest  |
+| Alpine.js    | 3       |
+| Tailwind CSS | 4       |
+| MySQL        | 8       |
+| Vite         | Latest  |
+| Pest         | Latest  |
+| Laravel Pint | Latest  |
+
+---
+
+# 📁 Project Structure
+
+```
+app/
+├── Http/
+├── Models/
+├── Policies/
+├── Requests/
+├── Services/
+└── Providers/
+
+resources/
+├── views/
+├── css/
+├── js/
+└── img/
+
+routes/
+database/
+tests/
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+# 🚀 Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Clone repository
 
-## Code of Conduct
+```bash
+git clone https://github.com/yourusername/catetin.git
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Masuk ke folder project
 
-## Security Vulnerabilities
+```bash
+cd catetin
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Install dependency
 
-## License
+```bash
+composer install
+npm install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Copy environment
+
+```bash
+cp .env.example .env
+```
+
+Generate application key
+
+```bash
+php artisan key:generate
+```
+
+Konfigurasi database pada file `.env`
+
+```env
+DB_DATABASE=catetin
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Jalankan migration dan seeder
+
+```bash
+php artisan migrate --seed
+```
+
+Buat symbolic link untuk file upload
+
+```bash
+php artisan storage:link
+```
+
+Jalankan aplikasi
+
+```bash
+php artisan serve
+npm run dev
+```
+
+---
+
+# 📸 Screenshots
+
+| Dashboard          | Transaction        |
+| ------------------ | ------------------ |
+| *(Add Screenshot)* | *(Add Screenshot)* |
+
+| Reports            | Settings           |
+| ------------------ | ------------------ |
+| *(Add Screenshot)* | *(Add Screenshot)* |
+
+---
+
+# 🧪 Testing
+
+Run all tests
+
+```bash
+php artisan test
+```
+
+Run Laravel Pint
+
+```bash
+vendor/bin/pint
+```
+
+---
+
+# 📂 Main Modules
+
+* Authentication
+* Shop Management
+* Category Management
+* Payment Method Management
+* Transaction Recording
+* Dashboard & Statistics
+* Sales Reports
+* Withdrawal Management
+* PDF & Excel Export
+
+---
+
+# 🔒 Security
+
+* Authentication Middleware
+* Authorization Policies
+* Form Request Validation
+* CSRF Protection
+* Password Hashing
+* File Upload Validation
+* Database Transactions
+* Ownership Authorization
+
+---
+
+# 📈 Future Improvements
+
+* QRIS Payment Gateway Integration
+* Midtrans Integration
+* Xendit Integration
+* GoPay / OVO / DANA API Integration
+* Email Notifications
+* Mobile Application
+* Multi-user & Role Management
+* REST API
+* Real-time Dashboard
+
+---
+
+# 👨‍💻 Developer
+
+**Yukira Hamiaski**
+
+Accounting Information Systems Project
+
+---
+
+# 📄 License
+
+This project is developed for educational purposes as part of an undergraduate final project (Skripsi).
+
+Feel free to use it as a reference while respecting the original author's work.
