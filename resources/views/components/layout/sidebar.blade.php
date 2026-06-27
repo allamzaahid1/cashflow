@@ -2,18 +2,11 @@
     class="flex h-screen w-64 flex-col bg-slate-900 text-white">
 
     {{-- Logo --}}
-    <div class="border-b border-slate-800 p-6">
-
-        <h1 class="text-xl font-bold">
-            CashFlow
-        </h1>
-
-        <p class="mt-1 text-sm text-slate-400">
-
+    <div class="border-b border-slate-800 p-6 flex flex-col items-center justify-center text-center gap-2">
+        <img src="{{ asset('brand/Catetin.png') }}" alt="Catetin Logo" class="w-[115px] h-auto">
+        <p class="text-xs text-slate-400 font-medium">
             Management System
-
         </p>
-
     </div>
 
     {{-- Menu --}}

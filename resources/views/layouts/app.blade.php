@@ -39,8 +39,8 @@
         </main>
 
     </div>
-
 </div>
 
+<div id="floating-layer" class="fixed inset-0 pointer-events-none z-50"></div>
 </body>
 </html>

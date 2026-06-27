@@ -23,14 +23,14 @@
         <div class="flex items-center gap-2">
             <a
                 href="{{ route('reports.export.pdf', request()->query()) }}"
-                class="flex items-center gap-2 border border-red-200 dark:border-red-950 text-red-700 dark:text-red-400 bg-red-50/50 dark:bg-red-950/20 hover:bg-red-55 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                class="flex items-center gap-2 border border-red-300 dark:border-red-800/80 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 hover:bg-red-100/80 dark:hover:bg-red-950/60 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
                 <x-lucide-file-text class="w-4 h-4" />
                 Unduh PDF
             </a>
             <a
                 href="{{ route('reports.export.excel', request()->query()) }}"
-                class="flex items-center gap-2 border border-green-200 dark:border-green-950 text-green-700 dark:text-green-400 bg-green-50/50 dark:bg-green-950/20 hover:bg-green-55 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                class="flex items-center gap-2 border border-green-300 dark:border-emerald-800/80 text-green-700 dark:text-emerald-400 bg-green-50 dark:bg-emerald-950/40 hover:bg-green-100/80 dark:hover:bg-emerald-950/60 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
                 <x-lucide-file-spreadsheet class="w-4 h-4" />
                 Unduh Excel
@@ -68,8 +68,8 @@
                 <span class="text-blue-600 dark:text-blue-400 text-lg">⚖</span>
                 <p class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Saldo Akhir</p>
             </div>
-            <p class="text-2xl font-extrabold @if($summary['net_cash_flow'] >= 0) text-success-text @else text-danger-text @endif" style="font-family: 'JetBrains Mono', monospace;">
-                Rp {{ number_format($summary['net_cash_flow'], 0, ',', '.') }}
+            <p class="text-2xl font-extrabold @if($summary['available_balance'] >= 0) text-success-text @else text-danger-text @endif" style="font-family: 'JetBrains Mono', monospace;">
+                Rp {{ number_format($summary['available_balance'], 0, ',', '.') }}
             </p>
         </div>
     </div>
@@ -167,42 +167,89 @@
         <table class="w-full text-sm">
             <thead>
                 <tr class="bg-bg-base/50">
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Tanggal & Waktu</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Kode</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Kategori</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Metode</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Keterangan</th>
-                    <th class="text-left px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Bukti</th>
-                    <th class="text-right px-5 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Jumlah</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Tanggal & Waktu</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Kode</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Tipe</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Kategori</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Metode</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Keterangan</th>
+                    <th class="text-right px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Pemasukan</th>
+                    <th class="text-right px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Pengeluaran</th>
+                    <th class="text-right px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Saldo Akhir</th>
+                    <th class="text-left px-4 py-3.5 text-xs font-semibold text-text-secondary uppercase tracking-wider">Bukti</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-border-base">
                 @forelse ($transactions as $tx)
                     <tr class="hover:bg-bg-base/30 transition-colors">
-                        <td class="px-5 py-3.5 text-text-secondary">
-                            {{ \Carbon\Carbon::parse($tx->transaction_date)->format('d M Y') }}, 
-                            <span class="text-xs font-mono text-text-secondary/60">{{ $tx->created_at->format('H:i') }}</span>
+                        <!-- Date -->
+                        <td class="px-4 py-3.5 text-text-secondary">
+                            {{ \Carbon\Carbon::parse($tx->date)->format('d M Y') }}, 
+                            <span class="text-xs font-mono text-text-secondary/60">{{ \Carbon\Carbon::parse($tx->created_at)->format('H:i') }}</span>
                         </td>
-                        <td class="px-5 py-3.5 text-xs font-semibold text-text-primary" style="font-family: 'JetBrains Mono', monospace;">
-                            {{ $tx->transaction_code }}
+                        <!-- Code -->
+                        <td class="px-4 py-3.5 text-xs font-semibold text-text-primary" style="font-family: 'JetBrains Mono', monospace;">
+                            {{ $tx->transaction_code ?: '-' }}
                         </td>
-                        <td class="px-5 py-3.5 text-text-primary">
-                            {{ $tx->category->name }}
+                        <!-- Type -->
+                        <td class="px-4 py-3.5">
+                            @if ($tx->is_withdrawal)
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400">
+                                    Penarikan
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{
+                                    $tx->type === 'income' ? 'bg-success-bg text-success-text' : 'bg-danger-bg text-danger-text'
+                                }}">
+                                    {{ $tx->type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}
+                                </span>
+                            @endif
                         </td>
-                        <td class="px-5 py-3.5">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{
-                                $tx->paymentMethod->type === 'cash' ? 'bg-warning-bg text-warning-text' : 'bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400'
-                            }}">
-                                {{ $tx->paymentMethod->name }}
-                            </span>
+                        <!-- Category -->
+                        <td class="px-4 py-3.5 text-text-primary">
+                            {{ $tx->category_name ?: '-' }}
                         </td>
-                        <td class="px-5 py-3.5 text-text-secondary text-sm">
+                        <!-- Method -->
+                        <td class="px-4 py-3.5">
+                            @if($tx->payment_method_name)
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400">
+                                    {{ $tx->payment_method_name }}
+                                </span>
+                            @else
+                                <span class="text-text-secondary/40">-</span>
+                            @endif
+                        </td>
+                        <!-- Notes -->
+                        <td class="px-4 py-3.5 text-text-secondary text-sm">
                             {{ $tx->description ?: '-' }}
                         </td>
-                        <td class="px-5 py-3.5">
+                        <!-- Income Amount -->
+                        <td class="px-4 py-3.5 text-right font-bold text-success-text" style="font-family: 'JetBrains Mono', monospace;">
+                            @if (!$tx->is_withdrawal && $tx->type === 'income')
+                                +Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <!-- Expense Amount -->
+                        <td class="px-4 py-3.5 text-right font-bold text-danger-text" style="font-family: 'JetBrains Mono', monospace;">
+                            @if ($tx->is_withdrawal)
+                                -Rp {{ number_format($tx->amount + $tx->admin_fee, 0, ',', '.') }}
+                            @elseif ($tx->type === 'expense')
+                                -Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <!-- Running Balance -->
+                        <td class="px-4 py-3.5 text-right font-bold text-text-primary" style="font-family: 'JetBrains Mono', monospace;">
+                            Rp {{ number_format($tx->running_balance, 0, ',', '.') }}
+                        </td>
+                        <!-- Proof -->
+                        <td class="px-4 py-3.5">
                             @if ($tx->proof_image)
                                 <a
-                                    href="{{ asset('storage/' . $tx->proof_image) }}"
+                                    href="{{ route('transactions.proof', $tx->id) }}"
                                     target="_blank"
                                     class="text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1"
                                 >
@@ -212,15 +259,10 @@
                                 <span class="text-xs text-text-secondary/40">-</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3.5 text-right font-bold {{
-                            $tx->category->type === 'income' ? 'text-success-text' : 'text-danger-text'
-                        }}" style="font-family: 'JetBrains Mono', monospace;">
-                            {{ $tx->category->type === 'income' ? '+' : '-' }}Rp {{ number_format($tx->amount, 0, ',', '.') }}
-                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center py-12 text-text-secondary text-sm">
+                        <td colspan="10" class="text-center py-12 text-text-secondary text-sm">
                             Tidak ditemukan transaksi yang cocok dengan filter.
                         </td>
                     </tr>

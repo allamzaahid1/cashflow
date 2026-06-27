@@ -345,306 +345,310 @@
         </div>
     </div>
 
-    <!-- Tambah Kategori Modal -->
-    <div x-show="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center" style="display: none;" x-cloak>
-        <div class="absolute inset-0 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm" @click="showAddModal = false"></div>
-        <div class="relative bg-bg-surface border border-border-base text-text-primary rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
-                <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                    Tambah Kategori Baru
-                </h3>
-                <button
-                    type="button"
-                    @click="showAddModal = false"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
-                >
-                    <x-lucide-x class="w-4 h-4" />
-                </button>
-            </div>
-            <form action="{{ route('categories.store') }}" method="POST">
-                @csrf
-                <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Kategori</label>
-                        <input
-                            name="name"
-                            required
-                            placeholder="cth: Penjualan Tambahan, Listrik"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Kategori</label>
-                        <div class="relative">
-                            <select 
-                                name="type" 
-                                required
-                                class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
-                            >
-                                <option value="income" class="bg-bg-surface text-text-primary">Pemasukan (Income)</option>
-                                <option value="expense" class="bg-bg-surface text-text-primary">Pengeluaran (Expense)</option>
-                            </select>
-                            <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+    <template x-teleport="#floating-layer">
+        <div x-show="showAddModal" class="fixed inset-0 z-70 flex items-center justify-center pointer-events-none" style="display: none;" x-cloak>
+            <div class="absolute inset-0 z-60 bg-black/40 backdrop-blur-sm pointer-events-auto" @click="showAddModal = false"></div>
+            <div class="relative z-70 bg-bg-surface border border-border-base text-text-primary rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden pointer-events-auto">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
+                    <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                        Tambah Kategori Baru
+                    </h3>
                     <button
                         type="button"
                         @click="showAddModal = false"
-                        class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
                     >
-                        Batal
-                    </button>
-                    <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
-                        Simpan Kategori
+                        <x-lucide-x class="w-4 h-4" />
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Ubah Kategori Modal -->
-    <div x-show="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center" style="display: none;" x-cloak>
-        <div class="absolute inset-0 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm" @click="showEditModal = false"></div>
-        <div class="relative bg-bg-surface border border-border-base text-text-primary rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
-                <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                    Ubah Kategori
-                </h3>
-                <button
-                    type="button"
-                    @click="showEditModal = false"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
-                >
-                    <x-lucide-x class="w-4 h-4" />
-                </button>
-            </div>
-            <form :action="'/categories/' + editCategory.id" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Kategori</label>
-                        <input
-                            name="name"
-                            required
-                            x-model="editCategory.name"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Kategori</label>
-                        <div class="relative">
-                            <select 
-                                name="type" 
+                <form action="{{ route('categories.store') }}" method="POST">
+                    @csrf
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Kategori</label>
+                            <input
+                                name="name"
                                 required
-                                x-model="editCategory.type"
-                                class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
-                            >
-                                <option value="income" class="bg-bg-surface text-text-primary">Pemasukan (Income)</option>
-                                <option value="expense" class="bg-bg-surface text-text-primary">Pengeluaran (Expense)</option>
-                            </select>
-                            <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                                placeholder="cth: Penjualan Tambahan, Listrik"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Kategori</label>
+                            <div class="relative">
+                                <select 
+                                    name="type" 
+                                    required
+                                    class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
+                                >
+                                    <option value="income" class="bg-bg-surface text-text-primary">Pemasukan (Income)</option>
+                                    <option value="expense" class="bg-bg-surface text-text-primary">Pengeluaran (Expense)</option>
+                                </select>
+                                <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                    <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                        <button
+                            type="button"
+                            @click="showAddModal = false"
+                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
+                            Simpan Kategori
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <template x-teleport="#floating-layer">
+        <div x-show="showEditModal" class="fixed inset-0 z-70 flex items-center justify-center pointer-events-none" style="display: none;" x-cloak>
+            <div class="absolute inset-0 z-60 bg-black/40 backdrop-blur-sm pointer-events-auto" @click="showEditModal = false"></div>
+            <div class="relative z-70 bg-bg-surface border border-border-base text-text-primary rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden pointer-events-auto">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
+                    <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                        Ubah Kategori
+                    </h3>
                     <button
                         type="button"
                         @click="showEditModal = false"
-                        class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
                     >
-                        Batal
-                    </button>
-                    <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
-                        Simpan Perubahan
+                        <x-lucide-x class="w-4 h-4" />
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Tambah Akun QRIS/Bank Modal -->
-    <div x-show="showAddPayModal" class="fixed inset-0 z-50 flex items-center justify-center" style="display: none;" x-cloak>
-        <div class="absolute inset-0 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm" @click="showAddPayModal = false"></div>
-        <div class="relative bg-bg-surface border border-border-base text-text-primary rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden" x-data="{ payType: 'qris' }">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
-                <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                    Tambah Akun QRIS/Bank
-                </h3>
-                <button
-                    type="button"
-                    @click="showAddPayModal = false"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
-                >
-                    <x-lucide-x class="w-4 h-4" />
-                </button>
-            </div>
-            <form action="{{ route('payment-methods.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Akun</label>
-                        <input
-                            name="name"
-                            required
-                            placeholder="cth: Gopay Warung, BCA Kasir"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Akun</label>
-                        <div class="relative">
-                            <select 
-                                name="type" 
+                <form :action="'/categories/' + editCategory.id" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Kategori</label>
+                            <input
+                                name="name"
                                 required
-                                x-model="payType"
-                                class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
-                            >
-                                <option value="qris" class="bg-bg-surface text-text-primary">QRIS</option>
-                                <option value="transfer" class="bg-bg-surface text-text-primary">Transfer Bank</option>
-                                <option value="ewallet" class="bg-bg-surface text-text-primary">E-wallet (Gopay/OVO/DANA)</option>
-                            </select>
-                            <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                                x-model="editCategory.name"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Kategori</label>
+                            <div class="relative">
+                                <select 
+                                    name="type" 
+                                    required
+                                    x-model="editCategory.type"
+                                    class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
+                                >
+                                    <option value="income" class="bg-bg-surface text-text-primary">Pemasukan (Income)</option>
+                                    <option value="expense" class="bg-bg-surface text-text-primary">Pengeluaran (Expense)</option>
+                                </select>
+                                <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Pemilik Rekening / Akun</label>
-                        <input
-                            name="account_name"
-                            required
-                            placeholder="cth: Budi Santoso"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
+                    <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                        <button
+                            type="button"
+                            @click="showEditModal = false"
+                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
+                            Simpan Perubahan
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nomor Telepon / Rekening</label>
-                        <input
-                            name="account_number"
-                            required
-                            placeholder="cth: 0812xxxxxxxx atau 1234567890"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
-                    </div>
-                    <div x-show="payType === 'qris'">
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Upload File QR Code</label>
-                        <div class="border-2 border-dashed border-border-base rounded-xl p-4 text-center bg-bg-base/30 text-text-secondary">
-                            <x-lucide-qr-code class="w-8 h-8 text-text-secondary/40 mx-auto mb-2" />
-                            <label class="cursor-pointer text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
-                                Pilih file QR Code
-                                <input type="file" name="qr_image" accept="image/*" class="hidden" />
-                            </label>
-                            <p class="text-xs text-text-secondary mt-1">PNG, JPG — maks. 2 MB</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <template x-teleport="#floating-layer">
+        <div x-show="showAddPayModal" class="fixed inset-0 z-70 flex items-center justify-center pointer-events-none" style="display: none;" x-cloak>
+            <div class="absolute inset-0 z-60 bg-black/40 backdrop-blur-sm pointer-events-auto" @click="showAddPayModal = false"></div>
+            <div class="relative z-70 bg-bg-surface border border-border-base text-text-primary rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden pointer-events-auto" x-data="{ payType: 'qris' }">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
+                    <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                        Tambah Akun QRIS/Bank
+                    </h3>
                     <button
                         type="button"
                         @click="showAddPayModal = false"
-                        class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
                     >
-                        Batal
-                    </button>
-                    <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
-                        Simpan Metode
+                        <x-lucide-x class="w-4 h-4" />
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Ubah Akun QRIS/Bank Modal -->
-    <div x-show="showEditPayModal" class="fixed inset-0 z-50 flex items-center justify-center" style="display: none;" x-cloak>
-        <div class="absolute inset-0 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm" @click="showEditPayModal = false"></div>
-        <div class="relative bg-bg-surface border border-border-base text-text-primary rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-            <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
-                <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                    Ubah Akun QRIS/Bank
-                </h3>
-                <button
-                    type="button"
-                    @click="showEditPayModal = false"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
-                >
-                    <x-lucide-x class="w-4 h-4" />
-                </button>
-            </div>
-            <form :action="'/payment-methods/' + editPayMethod.id" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Akun</label>
-                        <input
-                            name="name"
-                            required
-                            x-model="editPayMethod.name"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Akun</label>
-                        <div class="relative">
-                            <select 
-                                name="type" 
+                <form action="{{ route('payment-methods.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Akun</label>
+                            <input
+                                name="name"
                                 required
-                                x-model="editPayMethod.type"
-                                class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
-                            >
-                                <option value="qris" class="bg-bg-surface text-text-primary">QRIS</option>
-                                <option value="transfer" class="bg-bg-surface text-text-primary">Transfer Bank</option>
-                                <option value="ewallet" class="bg-bg-surface text-text-primary">E-wallet (Gopay/OVO/DANA)</option>
-                            </select>
-                            <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                                placeholder="cth: Gopay Warung, BCA Kasir"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Akun</label>
+                            <div class="relative">
+                                <select 
+                                    name="type" 
+                                    required
+                                    x-model="payType"
+                                    class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
+                                >
+                                    <option value="qris" class="bg-bg-surface text-text-primary">QRIS</option>
+                                    <option value="transfer" class="bg-bg-surface text-text-primary">Transfer Bank</option>
+                                    <option value="ewallet" class="bg-bg-surface text-text-primary">E-wallet (Gopay/OVO/DANA)</option>
+                                </select>
+                                <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Pemilik Rekening / Akun</label>
+                            <input
+                                name="account_name"
+                                required
+                                placeholder="cth: Budi Santoso"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nomor Telepon / Rekening</label>
+                            <input
+                                name="account_number"
+                                required
+                                placeholder="cth: 0812xxxxxxxx atau 1234567890"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div x-show="payType === 'qris'">
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Upload File QR Code</label>
+                            <div class="border-2 border-dashed border-border-base rounded-xl p-4 text-center bg-bg-base/30 text-text-secondary">
+                                <x-lucide-qr-code class="w-8 h-8 text-text-secondary/40 mx-auto mb-2" />
+                                <label class="cursor-pointer text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                                    Pilih file QR Code
+                                    <input type="file" name="qr_image" accept="image/*" class="hidden" />
+                                </label>
+                                <p class="text-xs text-text-secondary mt-1">PNG, JPG — maks. 2 MB</p>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Pemilik Rekening / Akun</label>
-                        <input
-                            name="account_name"
-                            required
-                            x-model="editPayMethod.account_name"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
+                    <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                        <button
+                            type="button"
+                            @click="showAddPayModal = false"
+                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
+                            Simpan Metode
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nomor Telepon / Rekening</label>
-                        <input
-                            name="account_number"
-                            required
-                            x-model="editPayMethod.account_number"
-                            class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
-                        />
-                    </div>
-                    <div x-show="editPayMethod.type === 'qris'">
-                        <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Upload File QR Code Baru (Opsional)</label>
-                        <div class="border-2 border-dashed border-border-base rounded-xl p-4 text-center bg-bg-base/30 text-text-secondary">
-                            <x-lucide-qr-code class="w-8 h-8 text-text-secondary/40 mx-auto mb-2" />
-                            <label class="cursor-pointer text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
-                                Pilih file QR Code baru
-                                <input type="file" name="qr_image" accept="image/*" class="hidden" />
-                            </label>
-                            <p class="text-xs text-text-secondary mt-1">PNG, JPG — maks. 2 MB (Kosongkan jika tidak diubah)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <template x-teleport="#floating-layer">
+        <div x-show="showEditPayModal" class="fixed inset-0 z-70 flex items-center justify-center pointer-events-none" style="display: none;" x-cloak>
+            <div class="absolute inset-0 z-60 bg-black/40 backdrop-blur-sm pointer-events-auto" @click="showEditPayModal = false"></div>
+            <div class="relative z-70 bg-bg-surface border border-border-base text-text-primary rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden pointer-events-auto">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-border-base">
+                    <h3 class="font-bold text-text-primary text-lg" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                        Ubah Akun QRIS/Bank
+                    </h3>
                     <button
                         type="button"
                         @click="showEditPayModal = false"
-                        class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-base transition-colors text-text-secondary"
                     >
-                        Batal
-                    </button>
-                    <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
-                        Simpan Perubahan
+                        <x-lucide-x class="w-4 h-4" />
                     </button>
                 </div>
-            </form>
+                <form :action="'/payment-methods/' + editPayMethod.id" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Akun</label>
+                            <input
+                                name="name"
+                                required
+                                x-model="editPayMethod.name"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Tipe Akun</label>
+                            <div class="relative">
+                                <select 
+                                    name="type" 
+                                    required
+                                    x-model="editPayMethod.type"
+                                    class="w-full appearance-none px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25"
+                                >
+                                    <option value="qris" class="bg-bg-surface text-text-primary">QRIS</option>
+                                    <option value="transfer" class="bg-bg-surface text-text-primary">Transfer Bank</option>
+                                    <option value="ewallet" class="bg-bg-surface text-text-primary">E-wallet (Gopay/OVO/DANA)</option>
+                                </select>
+                                <x-lucide-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nama Pemilik Rekening / Akun</label>
+                            <input
+                                name="account_name"
+                                required
+                                x-model="editPayMethod.account_name"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Nomor Telepon / Rekening</label>
+                            <input
+                                name="account_number"
+                                required
+                                x-model="editPayMethod.account_number"
+                                class="w-full px-4 py-2.5 text-sm text-text-primary bg-bg-base/30 border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div x-show="editPayMethod.type === 'qris'">
+                            <label class="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Upload File QR Code Baru (Opsional)</label>
+                            <div class="border-2 border-dashed border-border-base rounded-xl p-4 text-center bg-bg-base/30 text-text-secondary">
+                                <x-lucide-qr-code class="w-8 h-8 text-text-secondary/40 mx-auto mb-2" />
+                                <label class="cursor-pointer text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                                    Pilih file QR Code baru
+                                    <input type="file" name="qr_image" accept="image/*" class="hidden" />
+                                </label>
+                                <p class="text-xs text-text-secondary mt-1">PNG, JPG — maks. 2 MB (Kosongkan jika tidak diubah)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 px-6 py-4 border-t border-border-base">
+                        <button
+                            type="button"
+                            @click="showEditPayModal = false"
+                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-text-secondary border border-border-base rounded-lg hover:bg-bg-base transition-colors cursor-pointer"
+                        >
+                            Batal
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors cursor-pointer">
+                            Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </template>
 
 </div>
 @endsection

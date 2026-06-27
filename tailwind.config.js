@@ -12,7 +12,20 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                'bg-base': 'var(--bg-base)',
+                'bg-surface': 'var(--bg-surface)',
+                'border-base': 'var(--border-base)',
+                'text-primary': 'var(--text-primary)',
+                'text-secondary': 'var(--text-secondary)',
+                'success-bg': 'var(--success-bg)',
+                'success-text': 'var(--success-text)',
+                'danger-bg': 'var(--danger-bg)',
+                'danger-text': 'var(--danger-text)',
+                'warning-bg': 'var(--warning-bg)',
+                'warning-text': 'var(--warning-text)',
             },
         },
     },

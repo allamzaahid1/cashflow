@@ -1,18 +1,20 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\SettingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentMethodController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WithdrawalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -29,11 +31,11 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(ShopController::class)->group(function () {
 
-    Route::get('/shop/create', 'create')
-        ->name('shop.create');
+        Route::get('/shop/create', 'create')
+            ->name('shop.create');
 
-    Route::post('/shop', 'store')
-        ->name('shop.store');
+        Route::post('/shop', 'store')
+            ->name('shop.store');
 
     });
 
@@ -42,6 +44,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/transactions', [TransactionController::class, 'store'])
         ->name('transactions.store');
+
+    Route::get('/transactions/{transaction}/proof', [TransactionController::class, 'showProof'])
+        ->name('transactions.proof');
 
     Route::get('/reports', [ReportController::class, 'index'])
         ->name('reports.index');

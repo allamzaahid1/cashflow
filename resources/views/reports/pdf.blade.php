@@ -40,8 +40,8 @@
             </td>
             <td>
                 <div class="title">Saldo Akhir</div>
-                <div class="value @if($summary['net_cash_flow'] >= 0) text-green @else text-red @endif">
-                    Rp {{ number_format($summary['net_cash_flow'], 0, ',', '.') }}
+                <div class="value @if($summary['available_balance'] >= 0) text-green @else text-red @endif">
+                    Rp {{ number_format($summary['available_balance'], 0, ',', '.') }}
                 </div>
             </td>
         </tr>
@@ -52,27 +52,53 @@
             <tr>
                 <th>Tanggal</th>
                 <th>Kode</th>
+                <th>Tipe</th>
                 <th>Kategori</th>
                 <th>Metode</th>
                 <th>Keterangan</th>
-                <th class="text-right">Jumlah</th>
+                <th class="text-right">Pemasukan</th>
+                <th class="text-right">Pengeluaran</th>
+                <th class="text-right">Saldo</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($transactions as $tx)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($tx->transaction_date)->format('d/m/Y') }}</td>
-                    <td class="font-mono">{{ $tx->transaction_code }}</td>
-                    <td>{{ $tx->category->name }}</td>
-                    <td>{{ $tx->paymentMethod->name }}</td>
+                    <td>{{ \Carbon\Carbon::parse($tx->date)->format('d/m/Y') }}</td>
+                    <td class="font-mono">{{ $tx->transaction_code ?: '-' }}</td>
+                    <td>
+                        @if ($tx->is_withdrawal)
+                            Penarikan
+                        @else
+                            {{ $tx->type === 'income' ? 'Pemasukan' : 'Pengeluaran' }}
+                        @endif
+                    </td>
+                    <td>{{ $tx->category_name ?: '-' }}</td>
+                    <td>{{ $tx->payment_method_name ?: '-' }}</td>
                     <td>{{ $tx->description ?: '-' }}</td>
-                    <td class="text-right font-mono @if($tx->category->type === 'income') text-green @else text-red @endif" style="font-weight: bold;">
-                        {{ $tx->category->type === 'income' ? '+' : '-' }}Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                    <td class="text-right font-mono text-green" style="font-weight: bold;">
+                        @if (!$tx->is_withdrawal && $tx->type === 'income')
+                            +Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="text-right font-mono text-red" style="font-weight: bold;">
+                        @if ($tx->is_withdrawal)
+                            -Rp {{ number_format($tx->amount + $tx->admin_fee, 0, ',', '.') }}
+                        @elseif ($tx->type === 'expense')
+                            -Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="text-right font-mono" style="font-weight: bold;">
+                        Rp {{ number_format($tx->running_balance, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; color: #888;">Tidak ada data transaksi.</td>
+                    <td colspan="9" style="text-align: center; color: #888;">Tidak ada data transaksi.</td>
                 </tr>
             @endforelse
         </tbody>

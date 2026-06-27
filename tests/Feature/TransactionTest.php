@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\User;
-use App\Models\Shop;
 use App\Models\Category;
 use App\Models\PaymentMethod;
+use App\Models\Shop;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -170,4 +170,38 @@ test('user cannot record a transaction using another shop category or payment me
         ]);
 
     $response->assertSessionHasErrors('category_id');
+});
+
+test('only authenticated shop owner can access transaction proof', function () {
+    Storage::fake('public');
+
+    $user1 = User::factory()->create();
+    $shop1 = Shop::factory()->create(['user_id' => $user1->id]);
+    $category1 = Category::factory()->create(['shop_id' => $shop1->id, 'type' => 'income']);
+    $cashMethod1 = PaymentMethod::factory()->create(['shop_id' => $shop1->id, 'type' => 'cash']);
+
+    $tx = Transaction::factory()->create([
+        'shop_id' => $shop1->id,
+        'category_id' => $category1->id,
+        'payment_method_id' => $cashMethod1->id,
+        'amount' => 5000,
+        'proof_image' => UploadedFile::fake()->create('myproof.png', 50)->store('proofs', 'public'),
+    ]);
+
+    // 1. Unauthenticated guest should be redirected to login
+    $this->get("/transactions/{$tx->id}/proof")
+        ->assertRedirect('/login');
+
+    // 2. Authenticated user from another shop should get 403 Forbidden
+    $user2 = User::factory()->create();
+    $shop2 = Shop::factory()->create(['user_id' => $user2->id]);
+
+    $this->actingAs($user2)
+        ->get("/transactions/{$tx->id}/proof")
+        ->assertStatus(403);
+
+    // 3. Authenticated owner of the shop should get 200 OK
+    $this->actingAs($user1)
+        ->get("/transactions/{$tx->id}/proof")
+        ->assertOk();
 });

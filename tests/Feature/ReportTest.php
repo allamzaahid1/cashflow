@@ -1,10 +1,11 @@
 <?php
 
-use App\Models\User;
-use App\Models\Shop;
 use App\Models\Category;
 use App\Models\PaymentMethod;
+use App\Models\Shop;
 use App\Models\Transaction;
+use App\Models\User;
+use App\Models\Withdrawal;
 use App\Services\ReportService;
 
 test('authenticated user without shop is redirected to shop setup wizard', function () {
@@ -137,4 +138,65 @@ test('pagination returns exact number of entries and maintains query arguments',
     $transactions = $response->viewData('transactions');
     expect($transactions->count())->toEqual(5); // Page 2 contains 5 entries
     expect($transactions->total())->toEqual(15);
+});
+
+test('withdrawals appear in reports, reduce running balance, and affect summary', function () {
+    $user = User::factory()->create();
+    $shop = Shop::factory()->create(['user_id' => $user->id]);
+
+    $incomeCat = Category::factory()->create(['shop_id' => $shop->id, 'type' => 'income']);
+    $cashMethod = PaymentMethod::factory()->create(['shop_id' => $shop->id, 'type' => 'cash']);
+    $qrisMethod = PaymentMethod::factory()->create(['shop_id' => $shop->id, 'type' => 'qris']);
+
+    // 1. Record income transaction of 100,000
+    Transaction::factory()->create([
+        'shop_id' => $shop->id,
+        'category_id' => $incomeCat->id,
+        'payment_method_id' => $cashMethod->id,
+        'amount' => 100000,
+        'transaction_date' => now()->toDateString(),
+    ]);
+
+    // 2. Record approved/pending withdrawal of 40,000 with 2,500 admin fee
+    Withdrawal::factory()->create([
+        'shop_id' => $shop->id,
+        'payment_method_id' => $qrisMethod->id,
+        'amount' => 40000,
+        'admin_fee' => 2500,
+        'status' => 'pending',
+        'withdrawal_date' => now()->toDateString(),
+    ]);
+
+    $service = app(ReportService::class);
+    $reportItems = $service->getReportItems($shop, [
+        'start_date' => now()->startOfMonth()->toDateString(),
+        'end_date' => now()->toDateString(),
+    ]);
+
+    // Merged items should contain 2 elements
+    expect($reportItems->count())->toEqual(2);
+
+    // Sorted newest first, so the withdrawal (created second) comes first
+    $withdrawalItem = $reportItems->firstWhere('is_withdrawal', true);
+    $transactionItem = $reportItems->firstWhere('is_withdrawal', false);
+
+    expect($withdrawalItem)->not->toBeNull();
+    expect($transactionItem)->not->toBeNull();
+
+    // Check chronological running balance
+    // 1. Transaction (income): 100,000. Balance = 100,000.
+    // 2. Withdrawal: reduces balance by 42,500. Balance = 57,500.
+    expect($transactionItem->running_balance)->toEqual(100000);
+    expect($withdrawalItem->running_balance)->toEqual(57500);
+
+    // Check summary aggregates
+    $summary = $service->getSummary($shop, [
+        'start_date' => now()->startOfMonth()->toDateString(),
+        'end_date' => now()->toDateString(),
+        'type' => 'all',
+    ]);
+
+    expect($summary['total_income'])->toEqual(100000);
+    expect($summary['total_expense'])->toEqual(42500); // 40000 + 2500 admin fee
+    expect($summary['net_cash_flow'])->toEqual(57500);
 });

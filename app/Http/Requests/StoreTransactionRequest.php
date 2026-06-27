@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,8 +19,18 @@ class StoreTransactionRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('payment_method_type')) {
+            $type = $this->input('payment_method_type');
+            if ($type === 'tunai') {
+                $this->merge(['payment_method_type' => 'cash']);
+            }
+        }
+    }
+
     public function rules(): array
     {
         $shopId = auth()->user()->shop?->id ?? 0;

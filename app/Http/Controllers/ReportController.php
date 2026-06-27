@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReportService;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
     public function __construct(
         protected ReportService $reportService,
-    ) {
-    }
+    ) {}
 
     /**
      * Display the filtered transaction report.
@@ -29,21 +32,18 @@ class ReportController extends Controller
 
         // Set default filter properties if not set in query
         $filters = [
-            'start_date'        => $request->input('start_date', now()->startOfMonth()->toDateString()),
-            'end_date'          => $request->input('end_date', now()->toDateString()),
-            'type'              => $request->input('type', 'all'),
-            'category_id'       => $request->input('category_id'),
+            'start_date' => $request->input('start_date', now()->startOfMonth()->toDateString()),
+            'end_date' => $request->input('end_date', now()->toDateString()),
+            'type' => $request->input('type', 'all'),
+            'category_id' => $request->input('category_id'),
             'payment_method_id' => $request->input('payment_method_id'),
         ];
 
         $categories = $shop->categories()->orderBy('name')->get();
         $paymentMethods = $shop->paymentMethods()->orderBy('name')->get();
 
-        $query = $this->reportService->getTransactionQuery($shop, $filters);
+        $transactions = $this->reportService->getPaginatedReport($shop, $filters, 10, (int) $request->input('page', 1));
         $summary = $this->reportService->getSummary($shop, $filters);
-
-        // Paginate by 10 and maintain active query strings across page link updates
-        $transactions = $query->paginate(10)->withQueryString();
 
         return view('reports.index', compact(
             'transactions',
@@ -58,7 +58,7 @@ class ReportController extends Controller
     /**
      * Export the filtered transaction report as PDF.
      */
-    public function exportPdf(Request $request): RedirectResponse|\Illuminate\Http\Response
+    public function exportPdf(Request $request): RedirectResponse|Response
     {
         $shop = auth()->user()->shop;
 
@@ -68,25 +68,25 @@ class ReportController extends Controller
         }
 
         $filters = [
-            'start_date'        => $request->input('start_date', now()->startOfMonth()->toDateString()),
-            'end_date'          => $request->input('end_date', now()->toDateString()),
-            'type'              => $request->input('type', 'all'),
-            'category_id'       => $request->input('category_id'),
+            'start_date' => $request->input('start_date', now()->startOfMonth()->toDateString()),
+            'end_date' => $request->input('end_date', now()->toDateString()),
+            'type' => $request->input('type', 'all'),
+            'category_id' => $request->input('category_id'),
             'payment_method_id' => $request->input('payment_method_id'),
         ];
 
-        $transactions = $this->reportService->getTransactionQuery($shop, $filters)->get();
+        $transactions = $this->reportService->getReportItems($shop, $filters);
         $summary = $this->reportService->getSummary($shop, $filters);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('transactions', 'summary', 'filters', 'shop'));
+        $pdf = Pdf::loadView('reports.pdf', compact('transactions', 'summary', 'filters', 'shop'));
 
-        return $pdf->download('laporan-arus-kas-' . now()->format('YmdHis') . '.pdf');
+        return $pdf->download('laporan-arus-kas-'.now()->format('YmdHis').'.pdf');
     }
 
     /**
      * Export the filtered transaction report as Excel.
      */
-    public function exportExcel(Request $request): RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+    public function exportExcel(Request $request): RedirectResponse|StreamedResponse
     {
         $shop = auth()->user()->shop;
 
@@ -96,18 +96,18 @@ class ReportController extends Controller
         }
 
         $filters = [
-            'start_date'        => $request->input('start_date', now()->startOfMonth()->toDateString()),
-            'end_date'          => $request->input('end_date', now()->toDateString()),
-            'type'              => $request->input('type', 'all'),
-            'category_id'       => $request->input('category_id'),
+            'start_date' => $request->input('start_date', now()->startOfMonth()->toDateString()),
+            'end_date' => $request->input('end_date', now()->toDateString()),
+            'type' => $request->input('type', 'all'),
+            'category_id' => $request->input('category_id'),
             'payment_method_id' => $request->input('payment_method_id'),
         ];
 
-        $transactions = $this->reportService->getTransactionQuery($shop, $filters)->get();
+        $transactions = $this->reportService->getReportItems($shop, $filters);
 
         $headers = [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="laporan-arus-kas-' . now()->format('YmdHis') . '.xlsx"',
+            'Content-Disposition' => 'attachment; filename="laporan-arus-kas-'.now()->format('YmdHis').'.xlsx"',
         ];
 
         $callback = function () use ($transactions) {
@@ -116,18 +116,19 @@ class ReportController extends Controller
             // Add UTF-8 BOM
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            fputcsv($file, ['Tanggal', 'Kode Transaksi', 'Kategori', 'Tipe', 'Metode Pembayaran', 'Keterangan', 'Jumlah']);
+            fputcsv($file, ['Tanggal', 'Kode Transaksi', 'Tipe Transaksi', 'Kategori', 'Metode Pembayaran', 'Keterangan', 'Pemasukan', 'Pengeluaran', 'Saldo Akhir']);
 
             foreach ($transactions as $tx) {
-                $sign = $tx->category->type === 'income' ? '+' : '-';
                 fputcsv($file, [
-                    \Carbon\Carbon::parse($tx->transaction_date)->format('d/m/Y'),
-                    $tx->transaction_code,
-                    $tx->category->name,
-                    $tx->category->type === 'income' ? 'Pemasukan' : 'Pengeluaran',
-                    $tx->paymentMethod->name,
+                    Carbon::parse($tx->date)->format('d/m/Y'),
+                    $tx->transaction_code ?: '-',
+                    $tx->is_withdrawal ? 'Penarikan' : ($tx->type === 'income' ? 'Pemasukan' : 'Pengeluaran'),
+                    $tx->category_name ?: '-',
+                    $tx->payment_method_name ?: '-',
                     $tx->description ?: '-',
-                    $sign.number_format($tx->amount, 2, '.', ''),
+                    $tx->is_withdrawal ? '' : ($tx->type === 'income' ? number_format($tx->amount, 2, '.', '') : ''),
+                    $tx->is_withdrawal ? number_format($tx->amount + $tx->admin_fee, 2, '.', '') : ($tx->type === 'expense' ? number_format($tx->amount, 2, '.', '') : ''),
+                    number_format($tx->running_balance, 2, '.', ''),
                 ]);
             }
 
