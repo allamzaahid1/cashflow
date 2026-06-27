@@ -6,7 +6,7 @@
 
 ### Cash Flow Management System for MSMEs
 
-A web-based cash flow management application built with **Laravel 12**, designed to help small businesses record income, expenses, payment methods, and generate financial reports.
+A web-based cash flow management application built with **Laravel 13**, designed to help small businesses record income, expenses, payment methods, and generate financial reports.
 
 </div>
 
@@ -90,7 +90,7 @@ A web-based cash flow management application built with **Laravel 12**, designed
 | Technology   | Version |
 | ------------ | ------- |
 | PHP          | 8.3+    |
-| Laravel      | 12      |
+| Laravel      | 13      |
 | Blade        | Latest  |
 | Alpine.js    | 3       |
 | Tailwind CSS | 4       |
