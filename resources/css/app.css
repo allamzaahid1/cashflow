@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+    --font-sans: "Inter", sans-serif;
+
+    --color-bg-base: var(--bg-base);
+    --color-bg-surface: var(--bg-surface);
+    --color-border-base: var(--border-base);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+
+    --color-success-bg: var(--success-bg);
+    --color-success-text: var(--success-text);
+    --color-danger-bg: var(--danger-bg);
+    --color-danger-text: var(--danger-text);
+    --color-warning-bg: var(--warning-bg);
+    --color-warning-text: var(--warning-text);
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+    --bg-base: #f8fafc;
+    --bg-surface: #ffffff;
+    --border-base: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+
+    --success-bg: #f0fdf4;
+    --success-text: #16a34a;
+    --danger-bg: #fef2f2;
+    --danger-text: #dc2626;
+    --warning-bg: #fffbeb;
+    --warning-text: #d97706;
+}
+
+.dark {
+    --bg-base: #0f172a;
+    --bg-surface: #1e293b;
+    --border-base: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+
+    --success-bg: #052e16;
+    --success-text: #4ade80;
+    --danger-bg: #450a0a;
+    --danger-text: #f87171;
+    --warning-bg: #451a03;
+    --warning-text: #fbbf24;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+}
